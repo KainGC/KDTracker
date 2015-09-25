@@ -17,15 +17,14 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TextView android:id="@+id/text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hello, I am a TextView" />
+            <ListView
+                android:id="@+id/campaignList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/campaignBox"
+                android:choiceMode="singleChoice">
 
-            <Button android:id="@+id/button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hello, I am a Button" />
+            </ListView>
         </LinearLayout>
 
         <!-- The navigation drawer -->
@@ -63,7 +62,7 @@
                         android:id="@+id/userName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Rishabh"
+                        android:text="Menu"
                         android:textColor="#fff"
                         android:textSize="16sp"
                         android:textStyle="bold" />
