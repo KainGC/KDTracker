@@ -13,6 +13,7 @@
         <item >Gear</item>
         <item >Settings</item>
     </string-array>
+    <string name="title_activity_view_settlement">ViewSettlement</string>
 
 
 </resources>
