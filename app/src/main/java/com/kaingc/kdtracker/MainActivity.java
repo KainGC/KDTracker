@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<String> campaignAdapter = new ArrayAdapter<>(MainActivity.this, R.layout.campaign_list_layout, R.id.campaign_name, campaignTest);
         campaignList.setAdapter(campaignAdapter);
 
-        SQLiteDatabase campaignDB = openOrCreateDatabase("Campaigns", MODE_PRIVATE, null);
+        SQLiteDatabase campaignDB = openOrCreateDatabase("KingdomDeath", MODE_PRIVATE, null);
         campaignDB.execSQL("CREATE TABLE IF NOT EXISTS Campaigns(settlement_name VARCHAR, settlement_creator VARCHAR, settlement_status VARCHAR);");
         campaignDB.close();
     }
