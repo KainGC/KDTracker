@@ -1,13 +1,24 @@
 package com.kaingc.kdtracker;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CampaignDBHelper extends SQLiteOpenHelper {
+    // Logcat tag
+    private static final String LOG = "DatabaseHelper";
+
+    //Database and version
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "KingdomDeath.db";
 
+    //Tables
     public static final String CAMPAIGNS_TABLE = "campaigns";
     public static final String CAMPAIGN_DATA_TABLE = "campaign_data";
     public static final String RESOURCES_TABLE = "resources";
@@ -16,6 +27,7 @@ public class CampaignDBHelper extends SQLiteOpenHelper {
     public static final String CAMPAIGN_ID = "campaign_id";
     public static final String SETTLEMENT_NAME = "settlement_name";
     public static final String SETTLEMENT_CREATOR_ID = "settlement_creator_id";
+    public static final String SETTLEMENT_CREATOR_NAME = "settlement_creator_name";
 
     //Settlement Variables
     public static final String SETTLEMENT_ID = "settlement_id";
@@ -45,8 +57,6 @@ public class CampaignDBHelper extends SQLiteOpenHelper {
     public static final String WHITE_LION = "white_lion";
     public static final String SCREAMING_ANTELOPE = "screaming_antelope";
     public static final String PHOENIX = "phoenix";
-
-
 
     public static final String CREATE_CAMPAIGN_TABLE = "CREATE TABLE "
             + CAMPAIGNS_TABLE + "("
@@ -86,7 +96,7 @@ public class CampaignDBHelper extends SQLiteOpenHelper {
             + "FOREIGN KEY(" + SETTLEMENT_ID + ") REFERENCES " + CAMPAIGNS_TABLE + "(" + CAMPAIGN_ID + "));";
 
     public CampaignDBHelper(Context context){
-        super(context,DATABASE_NAME,null,DATABASE_VERSION);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     public void onCreate(SQLiteDatabase db) {
@@ -100,6 +110,62 @@ public class CampaignDBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + CAMPAIGN_DATA_TABLE);
         // create new tables
         onCreate(db);
+    }
+
+    public List<Campaign> getAllCampaigns(int aCreatorId){
+        List<Campaign> campaigns = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT * FROM " + CAMPAIGNS_TABLE + " WHERE "
+                + SETTLEMENT_CREATOR_ID + "=" + aCreatorId;
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if(c.moveToFirst()) {
+            do{
+                Campaign campaign = new Campaign();
+                campaign.setCampaignId(c.getInt(c.getColumnIndex(CAMPAIGN_ID)));
+                campaign.setSettlementName(c.getString(c.getColumnIndex(SETTLEMENT_NAME)));
+                campaign.setSettlementCreator(c.getString(c.getColumnIndex(SETTLEMENT_CREATOR_ID)));
+
+                campaigns.add(campaign);
+            }
+            while(c.moveToNext());
+        }
+
+        return campaigns;
+    }
+
+    public int createCampaign(int aCreatorId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(SETTLEMENT_NAME, "");
+        values.put(SETTLEMENT_CREATOR_ID, aCreatorId);
+
+        return db.insert(CAMPAIGNS_TABLE, null, values);
+    }
+
+    public Campaign getCampaign(int aCampaignId) {
+        Campaign campaign = new Campaign();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT * FROM " + CAMPAIGNS_TABLE
+                + " WHERE " + CAMPAIGN_ID + "=" +aCampaignId;
+
+        Log.e(LOG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if(c.moveToFirst()){
+            do{
+                campaign.setCampaignId(c.getInt(c.getColumnIndex(CAMPAIGN_ID)));
+                campaign.setSettlementName(c.getString(c.getColumnIndex(SETTLEMENT_NAME)));
+                campaign.setSettlementCreator(c.getString(c.getColumnIndex(SETTLEMENT_CREATOR_ID)));
+            }
+            while(c.moveToNext());
+        }
+
+        return campaign;
     }
 
 
