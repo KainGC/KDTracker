@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.database.sqlite.*;
@@ -20,7 +21,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
+
+    private static final String LOG = "MainActivity";
+    CampaignDBHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +39,13 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<String> campaignAdapter = new ArrayAdapter<>(MainActivity.this, R.layout.campaign_list_layout, R.id.campaign_name, campaignTest);
         campaignList.setAdapter(campaignAdapter);
 
-        SQLiteDatabase campaignDB = openOrCreateDatabase("KingdomDeath", MODE_PRIVATE, null);
-        campaignDB.execSQL("CREATE TABLE IF NOT EXISTS Campaigns(settlement_name VARCHAR, settlement_creator VARCHAR, settlement_status VARCHAR);");
-        campaignDB.close();
+        db = new CampaignDBHelper(getApplicationContext());
+
+        List<Campaign> campaignArray = db.getAllCampaigns(1);
+        if(campaignArray.size() <= 0)
+            Log.e(LOG, "The compaign list is empty");
+
+        db.closeDB();
     }
 
     @Override

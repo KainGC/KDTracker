@@ -15,56 +15,63 @@ public class CampaignDBHelper extends SQLiteOpenHelper {
     private static final String LOG = "DatabaseHelper";
 
     //Database and version
-    public static final int DATABASE_VERSION = 1;
-    public static final String DATABASE_NAME = "KingdomDeath.db";
+    private static final int DATABASE_VERSION = 1;
+    private static final String DATABASE_NAME = "KingdomDeath.db";
 
     //Tables
-    public static final String CAMPAIGNS_TABLE = "campaigns";
-    public static final String CAMPAIGN_DATA_TABLE = "campaign_data";
-    public static final String RESOURCES_TABLE = "resources";
+    private static final String CAMPAIGNS_TABLE = "campaigns";
+    private static final String CAMPAIGN_DATA_TABLE = "campaign_data";
+    private static final String RESOURCES_TABLE = "resources";
+    private static final String PLAYERS_TABLE = "players";
+    private static final String CAMPAIGN_RESOURCES_TABLE = "campaign_resources";
+    private static final String GEAR_TABLE = "gear";
 
     //Campaign Variables
-    public static final String CAMPAIGN_ID = "campaign_id";
-    public static final String SETTLEMENT_NAME = "settlement_name";
-    public static final String SETTLEMENT_CREATOR_ID = "settlement_creator_id";
-    public static final String SETTLEMENT_CREATOR_NAME = "settlement_creator_name";
+    private static final String CAMPAIGN_ID = "campaign_id";
+    private static final String SETTLEMENT_NAME = "settlement_name";
+    private static final String SETTLEMENT_CREATOR_ID = "settlement_creator_id";
+    private static final String SETTLEMENT_CREATOR_NAME = "settlement_creator_name";
 
     //Settlement Variables
-    public static final String SETTLEMENT_ID = "settlement_id";
-    public static final String SURVIVAL_LIMIT = "survival_limit";
-    public static final String DEATH_COUNT = "death_count";
-    public static final String LANTERN_YEAR = "lantern_year";
-    public static final String LIFE_PRINCIPLE = "life_principle";
-    public static final String DEATH_PRINCIPLE = "death_principle";
-    public static final String SOCIETY_PRINCIPLE = "society_principle";
-    public static final String CONVICTION_PRINCIPLE = "conviction_principle";
-    public static final String INNOVATION_EVENT = "innovation_event";
-    public static final String LIFE_EVENT = "life_event";
-    public static final String DEATH_EVENT = "death_event";
-    public static final String SOCIETY_EVENT = "society_event";
-    public static final String LANTERN_HOARD = "lantern_hoard";
-    public static final String BONE_SMITH = "bone_smith";
-    public static final String SKINNERY = "skinnery";
-    public static final String ORGAN_GRINDER = "organ_grinder";
-    public static final String CATARIUM = "catarium";
-    public static final String WEAPON_CRAFTER = "weapon_crafter";
-    public static final String LEATHER_WORKER = "leather_worker";
-    public static final String STONE_CIRCLE = "stone_circle";
-    public static final String BARBER_SURGEON = "barber_surgeon";
-    public static final String PLUMERY = "plumery";
-    public static final String BLACKSMITH = "blacksmith";
-    public static final String MASK_MAKER = "mask_maker";
-    public static final String WHITE_LION = "white_lion";
-    public static final String SCREAMING_ANTELOPE = "screaming_antelope";
-    public static final String PHOENIX = "phoenix";
+    private static final String SETTLEMENT_ID = "settlement_id";
+    private static final String SURVIVAL_LIMIT = "survival_limit";
+    private static final String DEATH_COUNT = "death_count";
+    private static final String LANTERN_YEAR = "lantern_year";
+    private static final String LIFE_PRINCIPLE = "life_principle";
+    private static final String DEATH_PRINCIPLE = "death_principle";
+    private static final String SOCIETY_PRINCIPLE = "society_principle";
+    private static final String CONVICTION_PRINCIPLE = "conviction_principle";
+    private static final String INNOVATION_EVENT = "innovation_event";
+    private static final String LIFE_EVENT = "life_event";
+    private static final String DEATH_EVENT = "death_event";
+    private static final String SOCIETY_EVENT = "society_event";
+    private static final String LANTERN_HOARD = "lantern_hoard";
+    private static final String BONE_SMITH = "bone_smith";
+    private static final String SKINNERY = "skinnery";
+    private static final String ORGAN_GRINDER = "organ_grinder";
+    private static final String CATARIUM = "catarium";
+    private static final String WEAPON_CRAFTER = "weapon_crafter";
+    private static final String LEATHER_WORKER = "leather_worker";
+    private static final String STONE_CIRCLE = "stone_circle";
+    private static final String BARBER_SURGEON = "barber_surgeon";
+    private static final String PLUMERY = "plumery";
+    private static final String BLACKSMITH = "blacksmith";
+    private static final String MASK_MAKER = "mask_maker";
+    private static final String WHITE_LION = "white_lion";
+    private static final String SCREAMING_ANTELOPE = "screaming_antelope";
+    private static final String PHOENIX = "phoenix";
 
-    public static final String CREATE_CAMPAIGN_TABLE = "CREATE TABLE "
+    //Resource Variables
+    private static final String RESOURCE_ID = "resource_id";
+    private static final String RESOURCE_NAME = "resource_name";
+
+    private static final String CREATE_CAMPAIGN_TABLE = "CREATE TABLE IF NOT EXISTS "
             + CAMPAIGNS_TABLE + "("
             + CAMPAIGN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
             + SETTLEMENT_NAME + " TEXT,"
             + SETTLEMENT_CREATOR_ID + " INTEGER);";
 
-    public static final String CREATE_CAMPAIGN_DATA_TABLE = "CREATE TABLE "
+    private static final String CREATE_CAMPAIGN_DATA_TABLE = "CREATE TABLE IF NOT EXISTS "
             + CAMPAIGN_DATA_TABLE + "("
             + SETTLEMENT_ID + " INTEGER PRIMARY KEY,"
             + SURVIVAL_LIMIT + " INTEGER,"
@@ -94,6 +101,11 @@ public class CampaignDBHelper extends SQLiteOpenHelper {
             + SCREAMING_ANTELOPE + " BOOLEAN,"
             + PHOENIX + " BOOLEAN,"
             + "FOREIGN KEY(" + SETTLEMENT_ID + ") REFERENCES " + CAMPAIGNS_TABLE + "(" + CAMPAIGN_ID + "));";
+
+    private static final String CREATE_RESOURCES_TABLE = "CREATE TABLE IF NOT EXISTS "
+            + RESOURCES_TABLE + "("
+            + RESOURCE_ID + " INT PRIMARY KEY"
+            + RESOURCE_NAME + " TEXT);";
 
     public CampaignDBHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -135,7 +147,7 @@ public class CampaignDBHelper extends SQLiteOpenHelper {
         return campaigns;
     }
 
-    public int createCampaign(int aCreatorId) {
+    public long createCampaign(int aCreatorId) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -168,5 +180,24 @@ public class CampaignDBHelper extends SQLiteOpenHelper {
         return campaign;
     }
 
+    public int updateCampaign(Campaign aCampaign) {
+        SQLiteDatabase db = this.getWritableDatabase();
 
+        ContentValues values = new ContentValues();
+        values.put(SETTLEMENT_NAME, aCampaign.getSettlementName());
+
+        return db.update(CAMPAIGNS_TABLE, values, CAMPAIGN_ID + "=?", new String[] {String.valueOf(aCampaign.getCampaignId())});
+    }
+
+    public void deleteCampaign(int aCampaignId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(CAMPAIGNS_TABLE, CAMPAIGN_ID + "=?", new String[]{String.valueOf(aCampaignId)});
+    }
+
+    public void closeDB() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        if (db != null && db.isOpen())
+            db.close();
+    }
 }
