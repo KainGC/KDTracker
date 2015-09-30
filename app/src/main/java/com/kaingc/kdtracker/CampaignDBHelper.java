@@ -114,12 +114,15 @@ public class CampaignDBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_CAMPAIGN_TABLE);
         db.execSQL(CREATE_CAMPAIGN_DATA_TABLE);
+        db.execSQL(CREATE_RESOURCES_TABLE);
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // on upgrade drop older tables
         db.execSQL("DROP TABLE IF EXISTS " + CAMPAIGNS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + CAMPAIGN_DATA_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + RESOURCES_TABLE);
+
         // create new tables
         onCreate(db);
     }

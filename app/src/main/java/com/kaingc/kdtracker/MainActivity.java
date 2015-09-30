@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,21 +31,27 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ArrayList<String> campaignNames = new ArrayList<>();
+        ArrayAdapter<String> campaignAdapter;
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String[] campaignTest = {"campaign 1", "campaign 2"};
+        ListView campaignListElement = (ListView) findViewById(R.id.campaignList);
 
-        ListView campaignList = (ListView) findViewById(R.id.campaignList);
-        ArrayAdapter<String> campaignAdapter = new ArrayAdapter<>(MainActivity.this, R.layout.campaign_list_layout, R.id.campaign_name, campaignTest);
-        campaignList.setAdapter(campaignAdapter);
 
         db = new CampaignDBHelper(getApplicationContext());
 
         List<Campaign> campaignArray = db.getAllCampaigns(1);
-        if(campaignArray.size() <= 0)
+        if(campaignArray.size() <= 0) {
             Log.e(LOG, "The compaign list is empty");
-
+            //campaignAdapter = new ArrayAdapter<>(MainActivity.this, R.layout.campaign_list_layout, R.id.campaign_name, );
+        }
+        else
+        {
+            campaignAdapter = new ArrayAdapter<>(MainActivity.this, R.layout.campaign_list_layout, R.id.campaign_name, campaignNames);
+            campaignListElement.setAdapter(campaignAdapter);
+        }
         db.closeDB();
     }
 
