@@ -65,13 +65,13 @@ public class CampaignDBHelper extends SQLiteOpenHelper {
     private static final String RESOURCE_ID = "resource_id";
     private static final String RESOURCE_NAME = "resource_name";
 
-    private static final String CREATE_CAMPAIGN_TABLE = "CREATE TABLE IF NOT EXISTS "
+    private static final String CREATE_CAMPAIGN_TABLE = "CREATE TABLE "
             + CAMPAIGNS_TABLE + "("
             + CAMPAIGN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + SETTLEMENT_NAME + " TEXT,"
-            + SETTLEMENT_CREATOR_ID + " INTEGER);";
+            + SETTLEMENT_NAME + " TEXT DEFAULT 'Founding',"
+            + SETTLEMENT_CREATOR_ID + " TEXT);";
 
-    private static final String CREATE_CAMPAIGN_DATA_TABLE = "CREATE TABLE IF NOT EXISTS "
+    private static final String CREATE_CAMPAIGN_DATA_TABLE = "CREATE TABLE "
             + CAMPAIGN_DATA_TABLE + "("
             + SETTLEMENT_ID + " INTEGER PRIMARY KEY,"
             + SURVIVAL_LIMIT + " INTEGER,"
@@ -112,6 +112,10 @@ public class CampaignDBHelper extends SQLiteOpenHelper {
     }
 
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL("DROP TABLE IF EXISTS " + CAMPAIGNS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + CAMPAIGN_DATA_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + RESOURCES_TABLE);
+
         db.execSQL(CREATE_CAMPAIGN_TABLE);
         db.execSQL(CREATE_CAMPAIGN_DATA_TABLE);
         db.execSQL(CREATE_RESOURCES_TABLE);
@@ -127,7 +131,7 @@ public class CampaignDBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public List<Campaign> getAllCampaigns(int aCreatorId){
+    public List<Campaign> getAllCampaigns(String aCreatorId){
         List<Campaign> campaigns = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -154,7 +158,7 @@ public class CampaignDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(SETTLEMENT_NAME, "");
+        values.put(SETTLEMENT_NAME, "Founding...");
         values.put(SETTLEMENT_CREATOR_ID, aCreatorId);
 
         return db.insert(CAMPAIGNS_TABLE, null, values);

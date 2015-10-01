@@ -12,7 +12,7 @@
         android:layout_height="match_parent">
 
         <!-- The main content view -->
-        <LinearLayout
+        <android.support.design.widget.CoordinatorLayout
             android:id="@+id/mainContent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -44,13 +44,15 @@
 
             </android.support.design.widget.AppBarLayout>
 
-            <ListView android:id="@+id/campaignList"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/campaignList"
+                android:scrollbars="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@+id/campaignBox"
                 android:layout_weight="1"
                 android:choiceMode="singleChoice">
-            </ListView>
+            </android.support.v7.widget.RecyclerView>
 
             <android.support.design.widget.FloatingActionButton android:id="@+id/fab"
                 android:layout_width="wrap_content"
@@ -60,7 +62,7 @@
                 android:src="@android:drawable/ic_input_add"
                 android:tint="#FFFFFF"
                 android:onClick="createCampaign"/>
-        </LinearLayout>
+        </android.support.design.widget.CoordinatorLayout>
 
         <!-- The navigation drawer -->
         <RelativeLayout

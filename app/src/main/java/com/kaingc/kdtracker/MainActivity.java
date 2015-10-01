@@ -1,11 +1,14 @@
 package com.kaingc.kdtracker;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +26,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,27 +35,57 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences sPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String creatorId = sPrefs.getString("kdm_uuid", null);
+
+        if(creatorId == null)
+        {
+            SharedPreferences.Editor sPrefsEditor = sPrefs.edit();
+            sPrefsEditor.putString("kdm_uuid", UUID.randomUUID().toString());
+            sPrefsEditor.commit();
+            creatorId = sPrefs.getString("kdm_uuid", null);
+        }
+
         ArrayList<String> campaignNames = new ArrayList<>();
-        ArrayAdapter<String> campaignAdapter;
+        RecyclerView.Adapter campaignAdapter;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ListView campaignListElement = (ListView) findViewById(R.id.campaignList);
+        RecyclerView campaignListElement = (RecyclerView) findViewById(R.id.campaignList);
 
 
         db = new CampaignDBHelper(getApplicationContext());
 
-        List<Campaign> campaignArray = db.getAllCampaigns(1);
+        List<Campaign> campaignArray = db.getAllCampaigns(creatorId);
+
+        // Test campaigns database
+        /*for(int i = 0; i < campaignArray.size(); i++) {
+            db.deleteCampaign(campaignArray.get(i).getCampaignId());
+        }
+        db.createCampaign(1);
+        db.createCampaign(1);
+        db.createCampaign(1);
+        db.createCampaign(1);
+        db.createCampaign(1);
+        campaignArray = db.getAllCampaigns(1);*/
+
         if(campaignArray.size() <= 0) {
-            Log.e(LOG, "The compaign list is empty");
-            //campaignAdapter = new ArrayAdapter<>(MainActivity.this, R.layout.campaign_list_layout, R.id.campaign_name, );
+            Log.e(LOG, "The campaign list is empty");
+            campaignNames.add("No settlements found");
+            //campaignAdapter = new ArrayAdapter<>(MainActivity.this, R.layout.campaign_list_layout, R.id.campaign_name, campaignNames);
         }
         else
         {
-            campaignAdapter = new ArrayAdapter<>(MainActivity.this, R.layout.campaign_list_layout, R.id.campaign_name, campaignNames);
-            campaignListElement.setAdapter(campaignAdapter);
+            Campaign tempCampaign;
+            for (int i = 0; i < campaignArray.size(); i++){
+                tempCampaign = campaignArray.get(i);
+                campaignNames.add(tempCampaign.getSettlementName());
+            }
+            //campaignAdapter = new ArrayAdapter<>(MainActivity.this, R.layout.campaign_list_layout, R.id.campaign_name, campaignNames);
         }
+        //campaignListElement.setAdapter(campaignAdapter);
+
         db.closeDB();
     }
 
